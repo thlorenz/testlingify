@@ -1,0 +1,30 @@
+{
+  "name": "testlingify",
+  "version": "0.0.0",
+  "description": "Adds github hooks and browser config for testling.",
+  "main": "testlingify.js",
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thlorenz/testlingify.git"
+  },
+  "homepage": "https://github.com/thlorenz/testlingify",
+  "dependencies": {
+    "json-file-plus": "0.0.8"
+  },
+  "devDependencies": {
+    "tap": "~0.4.3"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Thorsten Lorenz",
+    "email": "thlorenz@gmx.de",
+    "url": "http://thlorenz.com"
+  },
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.6"
+  }
+}
