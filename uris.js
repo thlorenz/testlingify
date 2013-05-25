@@ -1,6 +1,5 @@
 'use strict';
 
-var protocol = exports.protocol = 'https://';
 var api = exports.api = 'api.github.com';
 
 var credentials = exports.credentials = function (uname, pwd) {
@@ -8,5 +7,11 @@ var credentials = exports.credentials = function (uname, pwd) {
 };
 
 exports.hooks = function (uname, pwd, repo) {
-  return protocol + credentials(uname, pwd) + '@' + api + '/repos/' + uname + '/' + repo + '/hooks';
+  return 'https://' + credentials(uname, pwd) + '@' + api + '/repos/' + uname + '/' + repo + '/hooks';
 };
+
+exports.github = function (uname, repo) {
+  return 'http://github.com/' + uname + '/' + repo;
+};
+
+exports.testling = 'http://git.testling.com';
