@@ -9,7 +9,7 @@ var getHook = require('../lib/get-testling-hook')
 test('get testling hook existing repo with testling hook', function (t) {
   getHook('thlorenz', process.env.githubpwd, 'brace', function (err, hook) {
     t.notOk(err, 'no error')
-    t.equals(hook.url, 'http://git.testling.com')
+    t.equals(hook.config.url, 'http://git.testling.com')
     t.end() 
   });
 })
