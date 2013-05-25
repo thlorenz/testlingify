@@ -13,7 +13,9 @@
   "homepage": "https://github.com/thlorenz/testlingify",
   "dependencies": {
     "json-file-plus": "0.0.8",
-    "request": "~2.21.0"
+    "request": "~2.21.0",
+    "resolve-git-remote": "~0.1.0",
+    "find-parent-dir": "~0.1.0"
   },
   "devDependencies": {
     "tap": "~0.4.3"
