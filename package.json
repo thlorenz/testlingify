@@ -4,7 +4,7 @@
   "description": "Adds github hooks and browser config for testling.",
   "main": "testlingify.js",
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "node test/localonly.pre && tap test/*.js"
   },
   "repository": {
     "type": "git",

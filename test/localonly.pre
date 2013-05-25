@@ -1,0 +1,4 @@
+if (process.env.USER === 'thlorenz') process.exit(0);
+
+console.error('These tests only run locally in my environment since they require my github password ;)');
+process.exit(1);
