@@ -22,7 +22,7 @@
   "devDependencies": {
     "tap": "~0.4.3"
   },
-  "keywords": [],
+  "keywords": ["testling", "browserify", "hook", "github", "ci", "travisci", "travis", "browserling"],
   "author": {
     "name": "Thorsten Lorenz",
     "email": "thlorenz@gmx.de",
