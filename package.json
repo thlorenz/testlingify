@@ -2,7 +2,7 @@
   "name": "testlingify",
   "version": "0.0.0",
   "description": "Adds github hooks and browser config for testling.",
-  "main": "testlingify.js",
+  "bin": "bin/testlingify.js",
   "scripts": {
     "test": "node test/localonly.pre && tap test/*.js"
   },
