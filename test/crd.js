@@ -16,27 +16,27 @@ test('given a no testling hook exists for a repo', function (t) {
 
   t.once('end', function () {
     // cleanup
-    deleteHook('thlorenz', pwd, 'test-api', function (err, res) { t.end() })
+    deleteHook('thlorenz', pwd, 'thlorenz', 'test-api', function (err, res) { t.end() })
   })
 
-  deleteHook('thlorenz', pwd, 'test-api', function (err, res) {
+  deleteHook('thlorenz', pwd, 'thlorenz', 'test-api', function (err, res) {
     // may have err if no hook existed, but we don't care
 
-    testHook('thlorenz', pwd, 'test-api', function (err, res) {
+    testHook('thlorenz', pwd, 'thlorenz', 'test-api', function (err, res) {
       t.ok(err, 'testing hook has error')
     })
 
-    createHook('thlorenz', pwd, 'test-api', function (err, res) {
+    createHook('thlorenz', pwd, 'thlorenz', 'test-api', function (err, res) {
 
       t.notOk(err, 'no error on first creation')
       t.ok(res.created, 'creates hook')
 
-      testHook('thlorenz', pwd, 'test-api', function (err, res) {
+      testHook('thlorenz', pwd, 'thlorenz', 'test-api', function (err, res) {
         t.notOk(err, 'testing hook has no error')
         t.ok(res.sent, 'post sent')
       })
 
-      createHook('thlorenz', pwd, 'test-api', function (err, res) {
+      createHook('thlorenz', pwd, 'thlorenz', 'test-api', function (err, res) {
         t.notOk(err, 'no error on second creation')
         t.notOk(res.created, 'not created again')
       })

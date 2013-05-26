@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
 'use strict';
-var path             =  require('path')
-  , log              =  require('npmlog')
-  , fs               =  require('fs')
+var log              =  require('npmlog')
   , resolveGitRemote =  require('resolve-git-remote')
-  , findParentDir    =  require('find-parent-dir')
-  , jsonFile         =  require('json-file-plus')
   , getConfig        =  require('../lib/get-config')
+  , updatePackage    =  require('../lib/update-package')
+  , createHook       =  require('../lib/create-testling-hook')
   ;
 
 var task = (function () {
@@ -44,44 +42,27 @@ function gotRemote(remote) {
       log.error('testlingify', err);
       process.exit(1);
     }
+    checkConfig(config);
     gotRemoteAndConfig(config, uname, repo);
   });
 }
 
 function gotRemoteAndConfig(config, uname, repo) {
-  checkConfig(config);
   if (config.github.username !== uname) 
     log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, uname);
 
-  updatePackage(config);
+  updatePackage(config, createTestlingHook.bind(null, config, uname, repo));
 }
 
-function updatePackage(config) {
-  findParentDir(process.cwd(), '.git', function (err, dir) {
-    if (err) {
-      log.error('testlingify', err);
-      process.exit(1);
-    }
-    if (!dir) {
-      log.error('testlingify', 'not sure what happened, but I cannot find your repository root');
-      process.exit(1);
+function createTestlingHook(config, uname, repo) {
+  var gh = config.github;
+  createHook(gh.username, gh.password, uname, repo, function (err) {
+    if (err) { 
+      log.error('testlingify', 'Encountered error when testling hook for %s/%s as %s', uname, repo, config.github.username);
+      return log.error('testlingify', err);
     }
 
-    var packageLocation = path.join(dir, 'package.json');
-    fs.readFile(packageLocation, 'utf-8', function (err, data) {
-      if (err) {
-        log.error('testlingify', 'cannot find a package.json in repository root: ' + dir);
-        log.error('testlingify', err);
-      }
-
-      var p = new jsonFile.JSONFile(data);
-      p.set({ testling: config.testling });
-      
-      // cannot use built in p.save() here since it relies on process.cwd()
-      var json = JSON.stringify(p.data, null, p.indent || 2);
-      fs.writeFileSync(packageLocation + '.saved', json + (p.trailing ? '\n\n' : '\n'), 'utf-8');
-      log.info('testlingify', 'Successfully set testling property in package.json.');
-    });
+    log.info('testlingify', 'Successfully created testling hook for %s/%s as %s', uname, repo, config.github.username);
   });
 }
 
