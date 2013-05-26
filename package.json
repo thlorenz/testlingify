@@ -1,6 +1,6 @@
 {
   "name": "testlingify",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Adds github hooks and browser config for testling.",
   "bin": "bin/testlingify.js",
   "scripts": {
@@ -22,7 +22,16 @@
   "devDependencies": {
     "tap": "~0.4.3"
   },
-  "keywords": ["testling", "browserify", "hook", "github", "ci", "travisci", "travis", "browserling"],
+  "keywords": [
+    "testling",
+    "browserify",
+    "hook",
+    "github",
+    "ci",
+    "travisci",
+    "travis",
+    "browserling"
+  ],
   "author": {
     "name": "Thorsten Lorenz",
     "email": "thlorenz@gmx.de",
