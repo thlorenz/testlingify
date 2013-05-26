@@ -6,6 +6,7 @@ var log              =  require('npmlog')
   , getConfig        =  require('../lib/get-config')
   , updatePackage    =  require('../lib/update-package')
   , createHook       =  require('../lib/create-testling-hook')
+  , testHook         =  require('../lib/test-testling-hook')
   ;
 
 var task = (function () {
@@ -19,8 +20,12 @@ var task = (function () {
   process.exit(1);
 })();
 
-log.info('testlingify', 'task: ', task);
-
+if (task === 'hook') {
+  log.info('testlingify', 'Adding testling config to your package and creating testling hook on your github repository');
+}
+if (task === 'test') {
+  log.info('testlingify', 'Testing testling hook on your github repository');
+}
 
 resolveGitRemote(function (err, remote) {
   if (err) {
@@ -32,10 +37,16 @@ resolveGitRemote(function (err, remote) {
 });
 
 function gotRemote(remote) {
-  var nameRepo = remote.split('/')
-    , uname = nameRepo[0]
-    , repo = nameRepo[1]
+  var ownerRepo = remote.split('/')
+    , owner = ownerRepo[0]
+    , repo = ownerRepo[1]
     ;
+
+  if (task === 'badge')
+    return console.log(
+      '[![testling badge](https://ci.testling.com/' + owner + '/' + repo + '.png)]' +
+      '(https://ci.testling.com/' + owner + '/' + repo + ')'
+    );
 
   getConfig(function (err, config) {
     if (err) {
@@ -43,33 +54,49 @@ function gotRemote(remote) {
       process.exit(1);
     }
     checkConfig(config);
-    gotRemoteAndConfig(config, uname, repo);
+    gotRemoteAndConfig(config, owner, repo);
   });
 }
 
-function gotRemoteAndConfig(config, uname, repo) {
-  if (config.github.username !== uname) 
-    log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, uname);
+function gotRemoteAndConfig(config, owner, repo) {
+  if (config.github.username !== owner) 
+    log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, owner);
 
-  updatePackage(config, createTestlingHook.bind(null, config, uname, repo));
+  if (task === 'hook') 
+    return updatePackage(config, createTestlingHook.bind(null, config, owner, repo));
+  if (task === 'test') 
+    return testTestlingHook(config, owner, repo);
+
+  log.error('testlingify', 'Unkown task: %s. Try "testlingify" or "testlignify test" or "testlingify badge"', task);
 }
 
-function createTestlingHook(config, uname, repo) {
+function createTestlingHook(config, owner, repo) {
   var gh = config.github;
-  createHook(gh.username, gh.password, uname, repo, function (err) {
+  createHook(gh.username, gh.password, owner, repo, function (err, hook) {
     if (err) { 
-      log.error('testlingify', 'Encountered error when testling hook for %s/%s as %s', uname, repo, config.github.username);
+      log.error('testlingify', 'Encountered error when testling hook for %s/%s as %s', owner, repo, config.github.username);
       return log.error('testlingify', err);
     }
 
-    log.info('testlingify', 'Successfully created testling hook for %s/%s as %s', uname, repo, config.github.username);
+    return hook.created
+      ? log.info('testlingify', 'Successfully created testling hook for %s/%s as %s', owner, repo, config.github.username)
+      : log.warn('testlingify', 'Did not create testling hook for %s/%s as %s because it already exists', owner, repo, config.github.username);
+  });
+}
+
+function testTestlingHook(config, owner, repo) {
+  var gh = config.github;
+  testHook(gh.username, gh.password, owner, repo, function (err, hook) {
+    if (err) return log.error('testlingify', err.message);
+    if (hook.sent) return log.info('testlingify', hook.message);
+    log.warn('testlingify', 'Although no error occurred, a post to your testling hook could not be properly sent');
   });
 }
 
 function checkConfig(config) {
   function tellToEditAndExit(problem) {
     log.error('testlingify', problem);
-    log.error('testlingify', 'Please edit the testlingify config to correct this.');
+    log.error('testlingify', 'Please edit the testlingify config at %s to correct this.', config.location);
     process.exit(1);
   }
 
@@ -77,5 +104,5 @@ function checkConfig(config) {
   if (!github) tellToEditAndExit('No github config found!');
   if (!github.username || github.username.length === 0) tellToEditAndExit('github username missing!');
   if (!github.password || github.password.length === 0) tellToEditAndExit('github password missing!');
-  if (!config.testling) tellToEditAndExit('testling config missing');
+  if (!config.testling) tellToEditAndExit('testling config missing!');
 }
