@@ -17,9 +17,12 @@ var task = (function () {
   if (arg === 'test' || arg === 'badge') return arg;
 
   if (arg === "-h" || arg === "--help") {
-    return console.log("usage:\n" +
-      "run testlingify to add hooks.\n" +
-      "run testlingify test to test the hook")
+    console.log(
+      'usage: testlingify            (adds testling hook to github and testling config to package.json)\n' +
+      '       testlingify test       (tests testling github hook on)\n' +
+      '       testlingify badge      (prints testling badge)');
+
+    process.exit(0);
   }
 
   log.error('testlingify', 'unknown task: ' + arg);
