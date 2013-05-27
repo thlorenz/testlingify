@@ -16,6 +16,12 @@ var task = (function () {
   arg = arg.toLowerCase();
   if (arg === 'test' || arg === 'badge') return arg;
 
+  if (arg === "-h" || arg === "--help") {
+    return console.log("usage:\n" +
+      "run testlingify to add hooks.\n" +
+      "run testlingify test to test the hook")
+  }
+
   log.error('testlingify', 'unknown task: ' + arg);
   process.exit(1);
 })();
