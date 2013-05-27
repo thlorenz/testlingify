@@ -19,7 +19,7 @@ var task = (function () {
   if (arg === "-h" || arg === "--help") {
     console.log(
       'usage: testlingify            (adds testling hook to github and testling config to package.json)\n' +
-      '       testlingify test       (tests testling github hook on)\n' +
+      '       testlingify test       (tests testling github hook)\n' +
       '       testlingify badge      (prints testling badge)');
 
     process.exit(0);
