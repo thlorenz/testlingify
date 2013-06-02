@@ -111,7 +111,7 @@ function testTestlingHook(config, owner, repo) {
   });
 }
 
-function checkConfig(config, callback) {
+function checkConfig(config, cb) {
   function tellToEditAndExit(problem) {
     log.error('testlingify', problem);
     log.error('testlingify', 'Please edit the testlingify config at %s to correct this.', config.location);
@@ -124,16 +124,16 @@ function checkConfig(config, callback) {
     return promptly.prompt('Please enter github username: ',
       function (err, value) {
         if (err) {
-          return callback(err)
+          return cb(err)
         }
 
         config.github.username = value
         saveConfig(config, function (err) {
           if (err) {
-            return callback(err)
+            return cb(err)
           }
 
-          checkConfig(config, callback)
+          checkConfig(config, cb)
         })
       })
   }
@@ -142,17 +142,15 @@ function checkConfig(config, callback) {
     return pw(function (password) {
       config.github.password = password
       saveConfig(config, function (err) {
-        if (err) {
-          return callback(err)
-        }
+        if (err) return cb(err)
 
-        checkConfig(config, callback)
+        checkConfig(config, cb)
       })
     })
   }
   if (!config.testling) tellToEditAndExit('testling config missing!');
 
-  callback(null)
+  cb(null)
 }
 
 function saveConfig(config, callback) {
