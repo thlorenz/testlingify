@@ -3,6 +3,9 @@
 'use strict';
 var log              =  require('npmlog')
   , resolveGitRemote =  require('resolve-git-remote')
+  , promptly         =  require('promptly')
+  , fs               =  require('fs')
+  , pw               =  require('pw')
   , getConfig        =  require('../lib/get-config')
   , updatePackage    =  require('../lib/update-package')
   , createHook       =  require('../lib/create-testling-hook')
@@ -53,27 +56,33 @@ function gotRemote(remote) {
       log.error('testlingify', err);
       process.exit(1);
     }
-    checkConfig(config);
-    gotRemoteAndConfig(config, owner, repo);
+    checkConfig(config, function (err) {
+      if (err) {
+        log.error('testlingify', err);
+        process.exit(1);
+      }
+
+      gotRemoteAndConfig(config, owner, repo);
+    });
   });
 }
 
 function gotRemoteAndConfig(config, owner, repo) {
-  if (config.github.username !== owner) 
+  if (config.github.username !== owner)
     log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, owner);
 
-  if (task === 'hook') 
+  if (task === 'hook')
     return updatePackage(config, createTestlingHook.bind(null, config, owner, repo));
-  if (task === 'test') 
+  if (task === 'test')
     return testTestlingHook(config, owner, repo);
 
-  log.error('testlingify', 'Unkown task: %s. Try "testlingify" or "testlignify test" or "testlingify badge"', task);
+  log.error('testlingify', 'Unknown task: %s. Try "testlingify" or "testlignify test" or "testlingify badge"', task);
 }
 
 function createTestlingHook(config, owner, repo) {
   var gh = config.github;
   createHook(gh.username, gh.password, owner, repo, function (err, hook) {
-    if (err) { 
+    if (err) {
       log.error('testlingify', 'Encountered error when testling hook for %s/%s as %s', owner, repo, config.github.username);
       return log.error('testlingify', err);
     }
@@ -93,7 +102,7 @@ function testTestlingHook(config, owner, repo) {
   });
 }
 
-function checkConfig(config) {
+function checkConfig(config, callback) {
   function tellToEditAndExit(problem) {
     log.error('testlingify', problem);
     log.error('testlingify', 'Please edit the testlingify config at %s to correct this.', config.location);
@@ -102,7 +111,43 @@ function checkConfig(config) {
 
   var github = config.github;
   if (!github) tellToEditAndExit('No github config found!');
-  if (!github.username || github.username.length === 0) tellToEditAndExit('github username missing!');
-  if (!github.password || github.password.length === 0) tellToEditAndExit('github password missing!');
+  if (!github.username || github.username.length === 0) {
+    return promptly.prompt('Please enter github username: ',
+      function (err, value) {
+        if (err) {
+          return callback(err)
+        }
+
+        config.github.username = value
+        saveConfig(config, function (err) {
+          if (err) {
+            return callback(err)
+          }
+
+          checkConfig(config, callback)
+        })
+      })
+  }
+  if (!github.password || github.password.length === 0) {
+    process.stdout.write('Please enter github password: ')
+    return pw(function (password) {
+      config.github.password = password
+      saveConfig(config, function (err) {
+        if (err) {
+          return callback(err)
+        }
+
+        checkConfig(config, callback)
+      })
+    })
+  }
   if (!config.testling) tellToEditAndExit('testling config missing!');
+
+  callback(null)
+}
+
+function saveConfig(config, callback) {
+  var loc = config.location
+  var str = "module.exports = " + JSON.stringify(config)
+  fs.writeFile(loc, str, callback)
 }
