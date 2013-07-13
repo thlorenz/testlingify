@@ -4,11 +4,11 @@
 // Tests only work in author's environment since password is required to execute them
 
 var test = require('tap').test
-var getHook = require('../lib/get-testling-hook')
-  , createHook = require('../lib/create-testling-hook')
-  , deleteHook = require('../lib/delete-testling-hook')
-  , testHook = require('../lib/test-testling-hook')
-  , pwd = process.env.githubpwd
+var getHook    =  require('../lib/get-testling-hook')
+  , createHook =  require('../lib/create-testling-hook')
+  , deleteHook =  require('../lib/delete-testling-hook')
+  , testHook   =  require('../lib/test-testling-hook')
+  , pwd        =  process.env.GITHUB_PWD
   ;
 
 test('given a no testling hook exists for a repo', function (t) {
