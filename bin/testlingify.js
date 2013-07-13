@@ -3,9 +3,7 @@
 'use strict';
 var log              =  require('npmlog')
   , resolveGitRemote =  require('resolve-git-remote')
-  , promptly         =  require('promptly')
   , fs               =  require('fs')
-  , pw               =  require('pw')
   , getConfig        =  require('../lib/get-config')
   , updatePackage    =  require('../lib/update-package')
   , createHook       =  require('../lib/create-testling-hook')
@@ -65,14 +63,9 @@ function gotRemote(remote) {
       log.error('testlingify', err);
       process.exit(1);
     }
-    checkConfig(config, function (err) {
-      if (err) {
-        log.error('testlingify', err);
-        process.exit(1);
-      }
 
-      gotRemoteAndConfig(config, owner, repo);
-    });
+    checkConfig(config);
+    gotRemoteAndConfig(config, owner, repo);
   });
 }
 
@@ -111,50 +104,13 @@ function testTestlingHook(config, owner, repo) {
   });
 }
 
-function checkConfig(config, cb) {
+function checkConfig(config) {
+
   function tellToEditAndExit(problem) {
     log.error('testlingify', problem);
     log.error('testlingify', 'Please edit the testlingify config at %s to correct this.', config.location);
     process.exit(1);
   }
 
-  var github = config.github;
-  if (!github) tellToEditAndExit('No github config found!');
-  if (!github.username || github.username.length === 0) {
-    return promptly.prompt('Please enter github username: ',
-      function (err, value) {
-        if (err) {
-          return cb(err)
-        }
-
-        config.github.username = value
-        saveConfig(config, function (err) {
-          if (err) {
-            return cb(err)
-          }
-
-          checkConfig(config, cb)
-        })
-      })
-  }
-  if (!github.password || github.password.length === 0) {
-    process.stdout.write('Please enter github password: ')
-    return pw(function (password) {
-      config.github.password = password
-      saveConfig(config, function (err) {
-        if (err) return cb(err)
-
-        checkConfig(config, cb)
-      })
-    })
-  }
   if (!config.testling) tellToEditAndExit('testling config missing!');
-
-  cb(null)
-}
-
-function saveConfig(config, callback) {
-  var loc = config.location
-  var str = "module.exports = " + JSON.stringify(config)
-  fs.writeFile(loc, str, callback)
 }
