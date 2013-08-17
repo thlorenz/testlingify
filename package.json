@@ -12,7 +12,7 @@
   },
   "homepage": "https://github.com/thlorenz/testlingify",
   "dependencies": {
-    "json-file-plus": "0.0.8",
+    "json-file-plus": "~0.1.0",
     "request": "~2.21.0",
     "resolve-git-remote": "~0.1.0",
     "find-parent-dir": "~0.1.0",
@@ -44,3 +44,4 @@
     "node": ">=0.6"
   }
 }
+
