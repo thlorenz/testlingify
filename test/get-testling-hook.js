@@ -3,7 +3,7 @@
 
 // Tests only work in author's environment since password is required to execute them
 
-var test = require('tap').test
+var test = require('tape')
 var getHook = require('../lib/get-testling-hook')
 
 test('get testling hook existing repo with testling hook', function (t) {
