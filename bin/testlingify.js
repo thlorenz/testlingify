@@ -74,7 +74,14 @@ function gotRemoteAndConfig(config, owner, repo) {
     log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, owner);
 
   if (task === 'hook')
-    return updatePackage(config, createTestlingHook.bind(null, config, owner, repo));
+    return updatePackage(config, function (err) { 
+      if (err) {
+        log.error('testlingify', 'An error occurred while updating package.json');
+        log.error('testlingify', err);
+        process.exit(1);
+      }
+      createTestlingHook(config, owner, repo);
+    });
   if (task === 'test')
     return testTestlingHook(config, owner, repo);
 
