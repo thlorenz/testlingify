@@ -2,6 +2,7 @@
 /*jshint asi: true */
 
 // Tests only work in author's environment since password is required to execute them
+if (process.env.USER !== 'thlorenz') return;
 
 var test = require('tap').test
 var getHook    =  require('../lib/get-testling-hook')
