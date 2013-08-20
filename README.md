@@ -1,4 +1,4 @@
-# testlingify
+# testlingify [![build status](https://secure.travis-ci.org/thlorenz/testlingify.png)](http://travis-ci.org/thlorenz/testlingify)
 
 Adds github hooks and browser config for [testling](https://ci.testling.com/).
 
