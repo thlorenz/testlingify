@@ -74,7 +74,7 @@ function gotRemoteAndConfig(config, owner, repo) {
     log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, owner);
 
   if (task === 'hook')
-    return updatePackage(config, function (err) { 
+    return updatePackage(process.cwd(), config, function (err) { 
       if (err) {
         log.error('testlingify', 'An error occurred while updating package.json');
         log.error('testlingify', err);
