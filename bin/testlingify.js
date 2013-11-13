@@ -8,6 +8,7 @@ var log              =  require('npmlog')
   , updatePackage    =  require('../lib/update-package')
   , createHook       =  require('../lib/create-testling-hook')
   , testHook         =  require('../lib/test-testling-hook')
+  , check2Factor     =  require('../lib/check-2factor')
   ;
 
 var task = (function () {
@@ -74,7 +75,7 @@ function gotRemoteAndConfig(config, owner, repo) {
     log.warn('testlingify', 'github username found in config: "%s", does not match username of repository: "%s"', config.github.username, owner);
 
   if (task === 'hook')
-    return updatePackage(process.cwd(), config, function (err) { 
+    return updatePackage(process.cwd(), config, function (err) {
       if (err) {
         log.error('testlingify', 'An error occurred while updating package.json');
         log.error('testlingify', err);
@@ -89,8 +90,9 @@ function gotRemoteAndConfig(config, owner, repo) {
 }
 
 function createTestlingHook(config, owner, repo) {
-  var gh = config.github;
-  createHook(gh.username, gh.password, owner, repo, function (err, hook) {
+  var gh = check2Factor(config.github);
+
+  createHook(gh.user, gh.pass, owner, repo, function (err, hook) {
     if (err) {
       log.error('testlingify', 'Encountered error when testling hook for %s/%s as %s', owner, repo, config.github.username);
       return log.error('testlingify', err);
@@ -103,7 +105,7 @@ function createTestlingHook(config, owner, repo) {
 }
 
 function testTestlingHook(config, owner, repo) {
-  var gh = config.github;
+  var gh = check2Factor(config.github);
   testHook(gh.username, gh.password, owner, repo, function (err, hook) {
     if (err) return log.error('testlingify', err.message);
     if (hook.sent) return log.info('testlingify', hook.message);
