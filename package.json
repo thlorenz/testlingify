@@ -1,6 +1,6 @@
 {
   "name": "testlingify",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Adds github hooks and browser config for testling.",
   "bin": "bin/testlingify.js",
   "scripts": {
