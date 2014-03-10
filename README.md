@@ -13,6 +13,10 @@ Heavily inspired by [travisify](https://github.com/substack/travisify).
 The very first time you run testlingify it will create a default config for you and ask you to fill in your github
 username and password by editing the generated config.
 
+We recommend that instead of using passwords you use the [Personal Access Token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) feature of GitHub along with [Two Factor
+Authentication](https://github.com/blog/1614-two-factor-authentication). You can enter in an access token in place of a password when using testlingify. Make sure to enable the
+`write:repo_hook` scope option when creating the access token.
+
 Assuming we did that and are now in the local repository of the project `github.com/thlorenz/foo`.
 
 ```sh
